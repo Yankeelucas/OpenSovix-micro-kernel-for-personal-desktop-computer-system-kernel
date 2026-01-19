@@ -42,3 +42,30 @@ make run
    make template-module
    ```
 5. 在运行时加载模块
+命令示例
+# 查看系统状态
+> sysinfo
+
+# 列出进程
+> ps
+
+# 列出模块
+> modules
+
+# 列出内存池
+> mempools
+
+# 加载内存管理模块
+> module load memory_gc.bin
+
+# 创建内存池
+> mempool create small_objects SMALL 1024
+
+# 加载文件系统模块
+> module load fs_ntfs.bin
+
+# 挂载文件系统
+> mount /dev/hda1 /mnt NTFS
+
+# 卸载模块
+> module unload fs_ntfs
