@@ -1,73 +1,129 @@
-# OpenSovix 
-OpenSovix is a micro-kernel that is still developing which published with GPL-3.0, aim to replace Windows
+OpenSovix Micro-Kernel
 
-# 以下为简体中文：
-# 注意⚠️：此项目采用GPL-3.0许可证授权。
-一个高度模块化的微内核系统，采用分层架构和插件化设计，支持动态模块加载和扩展。这个系统设计遵循微内核核心最小化原则，所有非核心功能都作为可加载模块实现。
-设计特点总结
+https://img.shields.io/badge/License-GPLv3-blue.svg
+https://img.shields.io/badge/Status-Under%20Active%20Development-orange
+https://img.shields.io/badge/Architecture-Microkernel-green
 
-1. 真正的微内核架构：内核只包含最基本功能（进程、IPC、调度）
-2. 完全模块化：所有非核心功能都作为可加载模块
-3. 动态扩展：支持运行时加载/卸载模块
-4. 内存管理灵活：支持多内存池，预留GC接口
-5. 文件系统支持：设计支持NTFS、ext2、ext3等
-6. 可移植接口：为每个功能模块提供10-15个标准接口
-7. 进程间通信：支持多种IPC机制
-8. 系统调用标准化：统一的系统调用接口
+OpenSovix 是一个遵循 GPL-3.0 许可证开源，正在积极开发中的真正的微内核操作系统项目。它采用分层与插件化设计，旨在为个人桌面计算构建一个高度模块化、安全且可扩展的现代系统基石，其长期目标是成为一个可替代传统桌面操作系统的新选择。
 
-仍在开发图形操作界面，文件管理系统，和底层硬件支持。
-需要使用wsl或Linux进行编译运行，依赖宿主系统。
-# 构建系统
-1.克隆项目
-     git clone <repository-url>
-       cd microkernel 
+⚠️ 许可证声明: 本项目严格采用 GNU General Public License v3.0 许可证授权。所有分发和衍生作品必须遵循相同的开源条款。
 
-2.安装依赖
-     sudo apt-get install nasm gcc-multilib qemu-system-x86 grub-pc-bin xorriso 
+🎯 项目愿景：为什么是另一个微内核？
 
-3.构建系统
-    make clean
-      make all 
+我们致力于探索操作系统设计的另一种范式。与主流的宏内核（如Linux、Windows NT）不同，OpenSovix坚持微内核架构，将内核本身精简到极致——仅包含进程调度、进程间通信（IPC）和最基本的内存管理。所有其他服务（文件系统、驱动、网络栈等）均作为独立的用户态进程运行。
 
-4.运行
-    make run  
+这种设计的核心优势在于：
 
+· 高安全性与可靠性：服务的崩溃不会导致整个系统崩溃，可被独立重启。
+· 极致模块化：系统功能可像乐高一样动态组装、替换和升级。
+· 形式化验证潜力：精简的核心更易于进行数学证明，为构建高可信系统奠定基础。
 
+虽然构建一个功能完备的微内核系统面临巨大的工程挑战（如性能优化、驱动生态），但我们相信，这对于深入理解计算机系统原理、推动操作系统技术向前发展具有重要的教育和实践价值。
 
-# 模块开发流程
+✨ 核心设计特点
 
-1. 复制 template.c 作为起点
-2. 修改模块信息（名称、版本、描述等）
-3. 实现功能函数（最多15个）
-4. 编译模块并加载模块
-     bash
-     make template-module
+· 真正的微内核架构：内核仅包含最基本功能（进程/线程、IPC、调度），拒绝任何“非核心”代码。
+· 完全模块化：所有非核心功能均作为可加载模块实现，支持运行时动态加载与卸载。
+· 灵活的内存管理：支持多内存池机制，并为未来的垃圾回收（GC）预留了接口。
+· 广泛的文件系统支持：架构设计支持 NTFS、ext2、ext3 等主流文件系统（通过模块实现）。
+· 标准化接口：
+  · 为每个功能模块提供 10-15 个标准操作接口。
+  · 为上层应用提供统一的系统调用接口。
+· 高效的进程间通信：实现了多种IPC机制，作为模块与服务间通信的“血管”。
 
+🛠️ 快速开始
 
-# 系统命令示例
-查看系统状态
-> sysinfo
+目前，项目的编译和运行依赖于宿主Linux环境（或WSL）。
 
-列出进程
-> ps
+环境准备与构建
 
-列出模块
-> modules
+```bash
+# 1. 克隆仓库
+git clone https://github.com/Yankeelucas/OpenSovix.git
+cd OpenSovix
 
-列出内存池
-> mempools
+# 2. 安装必要的构建工具链和模拟器（以 Debian/Ubuntu 为例）
+sudo apt-get update
+sudo apt-get install nasm gcc-multilib qemu-system-x86 grub-pc-bin xorriso
 
-加载内存管理模块
-> module load memory_gc.bin
+# 3. 编译系统
+make clean
+make all
 
-创建内存池
-> mempool create small_objects SMALL 1024
+# 4. 在 QEMU 模拟器中运行
+make run
+```
 
-加载文件系统模块
-> module load fs_ntfs.bin
+📦 模块：系统的活力之源
 
-挂载文件系统
-> mount /dev/hda1 /mnt NTFS
+模块是扩展OpenSovix功能的唯一方式。开发新模块非常简单：
 
-卸载模块
-> module unload fs_ntfs 
+1. 复制模板：以 template.c 文件作为起点。
+2. 修改元信息：更新模块的名称、版本、描述等。
+3. 实现功能：在规定的框架内（最多15个标准接口函数）编写您的逻辑。
+4. 编译与加载：使用 make template-module 编译，并在系统运行时使用 module load <模块名.bin> 动态加载。
+
+💻 系统命令速查
+
+系统启动后，您可以使用以下命令进行交互和管理：
+
+命令 功能描述 示例
+sysinfo 显示系统概要信息（版本、内存使用等）。 sysinfo
+ps 列出当前系统中所有的进程。 ps
+modules 显示所有已加载的内核模块。 modules
+mempools 列出所有已创建的内存池及其状态。 mempools
+mempool create 创建一个新的内存池。 mempool create small_objects SMALL 1024
+module load/unload 动态加载或卸载一个功能模块。 module load memory_gc.bin
+mount 挂载文件系统（需先加载对应模块）。 mount /dev/hda1 /mnt NTFS
+
+🚧 当前开发状态与路线图
+
+项目处于早期积极开发阶段。目前的核心代码主要集中于搭建基础框架、底层硬件抽象和核心数据结构。
+
+· 当前开发焦点：
+  · 🖥️ 图形用户界面（GUI）框架
+  · 📁 完整的文件管理子系统
+  · 🔧 更广泛的底层硬件驱动支持
+· 已完成核心：
+  · 基础的多核调度器
+  · 虚拟内存管理
+  · 进程间通信（IPC）框架
+  · 模块加载器
+
+我们坦诚面对挑战：构建一个媲美宏内核性能的微内核、编写大量硬件驱动、培育应用生态，这些都是长期而艰巨的任务。本项目更多是一个深入实践操作系统原理的绝佳平台。
+
+📁 项目结构概览
+
+```
+OpenSovix/
+├── src/               # 源代码根目录
+│   ├── kernel/        # 微内核核心（进程、IPC、调度、内存）
+│   ├── modules/       # 各类可加载模块（驱动、文件系统、服务等）
+│   ├── lib/           # 内核库函数
+│   └── user/          # 初始用户空间服务（计划中）
+├── docs/              # 设计文档、原理说明
+├── scripts/           # 构建、链接与辅助脚本
+└── Makefile           # 项目主构建文件
+```
+
+🤝 加入我们：贡献指南
+
+我们热烈欢迎任何形式的贡献！无论您是操作系统专家，还是充满热情的学习者。
+
+1. 探索与学习：阅读 docs/ 下的文档和 src/ 下的代码，是理解微内核设计的最佳途径。
+2. 报告问题与建议：如果您发现了Bug或有新想法，请在 GitHub Issues 中提出。
+3. 提交代码：
+   · Fork 本仓库。
+   · 创建您的功能分支 (git checkout -b feature/AmazingFeature)。
+   · 提交清晰的更改 (git commit -m 'Add some AmazingFeature')。
+   · 推送到分支 (git push origin feature/AmazingFeature)。
+   · 开启一个 Pull Request。
+4. 完善文档：改进文档、注释或翻译同样价值连城。
+
+在贡献前，请确保您理解并同意本项目的 GPL-3.0 开源协议条款。
+
+📄 许可证
+
+Copyright (c) 2024 Yankeelucas & OpenSovix Project Contributors.
+
+本项目所有源代码均在 GNU General Public License v3.0 许可证下发布。详情请见项目根目录下的 LICENSE 文件。
